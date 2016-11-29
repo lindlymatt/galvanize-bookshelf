@@ -31,6 +31,14 @@ router.get('/books', (req, res, next) => {
 // Gets a Single Book
 router.get('/books/:id', (req, res, next) => {
   const specificBook = req.params.id;
+  knex('books')
+    .max('id')
+    .then(data => {
+      if (isNaN(specificBook) || specificBook > data[0].max || specificBook < 0) {
+        next(boom.create(404, 'Not Found'));
+        return;
+      }
+    });
 
   knex('books')
     .where('id', '=', specificBook)
@@ -53,23 +61,23 @@ router.post('/books', (req, res, next) => {
   } = decamelizeKeys(req.body);
 
   if (!title || !title.trim()) {
-    next(boom.create(400, 'Title cannot be blank!'));
+    next(boom.create(400, 'Title must not be blank'));
     return;
   }
   if (!author || !author.trim()) {
-    next(boom.create(400, 'Author cannot be blank!'));
+    next(boom.create(400, 'Author must not be blank'));
     return;
   }
   if (!genre || !genre.trim()) {
-    next(boom.create(400, 'Genre cannot be blank!'));
+    next(boom.create(400, 'Genre must not be blank'));
     return;
   }
   if (!description || !description.trim()) {
-    next(boom.create(400, 'Description cannot be blank!'));
+    next(boom.create(400, 'Description must not be blank'));
     return;
   }
   if (!cover_url || !cover_url.trim()) {
-    next(boom.create(400, 'Cover URL cannot be blank!'));
+    next(boom.create(400, 'Cover URL must not be blank'));
     return;
   }
 
@@ -94,10 +102,14 @@ router.post('/books', (req, res, next) => {
 
 router.patch('/books/:id', (req, res, next) => {
   const id = req.params.id;
-  if (isNaN(id) || id > knex('books').max('id') || id < 0) {
-    next(boom.create(404, 'Not Found'));
-    return;
-  }
+  knex('books')
+    .max('id')
+    .then(data => {
+      if (isNaN(id) || id > data[0].max || id < 0) {
+        next(boom.create(404, 'Not Found'));
+        return;
+      }
+    });
 
   const {
     title,
@@ -129,10 +141,14 @@ router.patch('/books/:id', (req, res, next) => {
 
 router.delete('/books/:id', (req, res, next) => {
   const id = req.params.id;
-  if (isNaN(id) || id > knex('books').max('id') || id < 0) {
-    next(boom.create(404, 'Not Found'));
-    return;
-  }
+  knex('books')
+    .max('id')
+    .then(data => {
+      if (isNaN(id) || id > data[0].max || id < 0) {
+        next(boom.create(404, 'Not Found'));
+        return;
+      }
+    });
 
   knex('books')
     .select('title', 'author', 'genre', 'description', 'cover_url')
