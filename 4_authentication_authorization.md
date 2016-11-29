@@ -11,7 +11,7 @@ Translate the following entity relationship diagram into a Knex migration file.
 ```text
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                         favorites                                               │
-├────────────────┬─────────────────────────┬──────────────────────────────────────────────────────┤
+├────────────────┬─────────────────────────┬──────────────────────────────────Miss───────────────────┤
 │id              │serial                   │primary key                                           │
 │book_id         │integer                  │not null references books(id) on delete cascade index │
 |user_id         │integer                  │not null references users(id) on delete cascade index │
