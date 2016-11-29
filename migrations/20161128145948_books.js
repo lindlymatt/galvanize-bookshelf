@@ -8,9 +8,9 @@ exports.up = function (knex, Promise) {
     table.string('author').notNullable().defaultTo('');
     table.string('genre').notNullable().defaultTo('');
     table.text('description').notNullable().defaultTo('');
-    table.text('coverUrl').notNullable().defaultTo('');
-    table.timestamp('createdAt').notNullable().defaultTo(knex.fn.now());
-    table.timestamp('updatedAt').notNullable().defaultTo(knex.fn.now());
+    table.text('cover_url').notNullable().defaultTo('');
+    table.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
+    table.timestamp('updated_at').notNullable().defaultTo(knex.fn.now());
   });
 };
 
