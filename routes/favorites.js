@@ -42,6 +42,11 @@ router.get('/favorites/check', (req, res, next) => {
     next(boom.create(401, 'Unauthorized'));
   }
 
+  if (isNaN(req.query.bookId)) {
+    next(boom.create(400, 'Book ID must be an integer'));
+    return;
+  }
+
   jwt.verify((req.cookies.token), process.env.JWT_SECRET, (err, decoded) => {
     if (err || decoded === undefined) {
       next(err);
@@ -70,6 +75,20 @@ router.post('/favorites', (req, res, next) => {
     res.setHeader('Content-Type', 'text/plain');
     next(boom.create(401, 'Unauthorized'));
   }
+
+  if (isNaN(req.query.bookId)) {
+    next(boom.create(400, 'Book ID must be an integer'));
+    return;
+  }
+
+  knex('books')
+    .max('id')
+    .then(data => {
+      if (req.body.bookId > data[0].max || req.body.bookId < 0) {
+        next(boom.create(404, 'Book not found'));
+        return;
+      }
+    });
 
   jwt.verify(req.cookies.token, process.env.JWT_SECRET, (err, decoded) => {
     const bookId = req.body.bookId;
@@ -121,6 +140,11 @@ router.delete('/favorites', (req, res, next) => {
   if (req.cookies.token === undefined) {
     res.setHeader('Content-Type', 'text/plain');
     next(boom.create(401, 'Unauthorized'));
+  }
+
+  if (isNaN(req.query.bookId)) {
+    next(boom.create(400, 'Book ID must be an integer'));
+    return;
   }
 
   jwt.verify((req.cookies.token), process.env.JWT_SECRET, (err, decoded) => {

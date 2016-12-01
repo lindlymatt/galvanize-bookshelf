@@ -25,6 +25,15 @@ router.post('/token', (req, res, next) => {
     password
   } = decamelizeKeys(req.body);
 
+  if (!email || !email.trim()) {
+    next(boom.create(400, 'Email must not be blank'));
+    return;
+  }
+  if (!password || !password.trim()) {
+    next(boom.create(400, 'Password must not be blank'));
+    return;
+  }
+
   knex('users')
     .where('email', '=', email)
     .then(data => {
