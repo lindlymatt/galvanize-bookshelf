@@ -4,11 +4,7 @@ const express = require('express');
 // eslint-disable-next-line new-cap
 const router = express.Router();
 const boom = require('boom');
-
-const {
-  camelizeKeys,
-  decamelizeKeys
-} = require('humps');
+const { camelizeKeys, decamelizeKeys } = require('humps');
 
 const knex = require('../knex');
 
@@ -17,8 +13,8 @@ router.get('/books', (req, res, next) => {
   knex('books')
     .orderBy('title')
     .then(data => {
-      res.status(200);
-      const books = camelizeKeys(data);
+      // res.status(200);
+      let books = camelizeKeys(data);
       // res.setHeader('Content-Type', 'application/json');
       // res.setHeader('Accepted', 'application/json');
       res.send(books);
@@ -141,26 +137,27 @@ router.patch('/books/:id', (req, res, next) => {
 
 router.delete('/books/:id', (req, res, next) => {
   const id = req.params.id;
+
   knex('books')
     .max('id')
     .then(data => {
       if (isNaN(id) || id > data[0].max || id < 0) {
         next(boom.create(404, 'Not Found'));
         return;
+      } else {
+        return knex('books')
+          .select('title', 'author', 'genre', 'description', 'cover_url')
+          .where('id', id)
+          .then(data => {
+            res.send(camelizeKeys(data[0]));
+            return knex('books')
+              .del()
+              .where('id', id);
+          })
+          .catch(err => {
+            next(err);
+          });
       }
-    });
-
-  knex('books')
-    .select('title', 'author', 'genre', 'description', 'cover_url')
-    .where('id', id)
-    .then(data => {
-      res.send(camelizeKeys(data[0]));
-      knex('books')
-        .where('id', id)
-        .del();
-    })
-    .catch(err => {
-      next(err);
     });
 });
 

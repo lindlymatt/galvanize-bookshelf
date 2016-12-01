@@ -28,7 +28,7 @@ router.post('/users', (req, res, next) => {
   knex('users')
     .where('email', email)
     .then(data => {
-      if (data) {
+      if (data.length !== 0) {
         next(boom.create(400, 'Email already exists'));
       }
     });
@@ -50,10 +50,10 @@ router.post('/users', (req, res, next) => {
         hashed_password
       };
 
-      knex('users')
+      return knex('users')
         .insert(newUser, '*')
         .then(data => {
-          knex('users')
+          return knex('users')
             .select('id', 'first_name', 'last_name', 'email')
             .where('email', email)
             .then(output => {
